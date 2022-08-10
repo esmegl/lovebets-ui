@@ -41,9 +41,9 @@ export default defineComponent({
 
 <template lang="pug">
 div.col-xs-5.col-sm-3.col-md-2.col-lg-2
-  .q-px-xs-xs.q-px-sm-xs.q-px-md-md.q-px-lg-md
+  .q-px-xs-xs.q-px-sm-xs.q-px-md-md.q-px-lg-md.justify-right
     LoginHandlerDropdown(v-if='account' :account='account')
-    q-btn.button-primary.btn-login(v-else @click='showModal = true' label='Connect')
+    q-btn.bg-white.text-primary.btn-login(v-else @click='showModal = true' label='Login' icon-right='login')
     WalletModal( v-model='showModal')
 </template>
 
