@@ -1,8 +1,8 @@
 {
-  "name": "open-block-explorer",
+  "name": "lovebets",
   "version": "0.1.1",
   "description": "..",
-  "productName": "Telos Block Explorer",
+  "productName": "Lovebets",
   "author": "DonaldPeat <don@caleos.io>",
   "private": true,
   "scripts": {
