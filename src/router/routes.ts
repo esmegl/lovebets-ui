@@ -6,7 +6,15 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Index.vue') }]
-  }
+  },
+  {
+    path: '/',
+    name: 'choose',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '/choose_role', component: () => import('pages/ChooseRole.vue') }
+    ]
+  },
   // {
   //   path: '/account/:account',
   //   name: 'account',
@@ -82,10 +90,10 @@ const routes: RouteRecordRaw[] = [
   // },
   // // Always leave this as last one,
   // // but you can also remove it
-  // {
-  //   path: '/:catchAll(.*)*',
-  //   component: () => import('pages/Error404.vue')
-  // }
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/Error404.vue')
+  }
 ];
 
 export default routes;
