@@ -40,9 +40,9 @@ export default defineComponent({
 </script>
 
 <template lang="pug">
-div.col-xs-5.col-sm-3.col-md-2.col-lg-2
+div.col-lg-5.col-sm-3.col-md-2.col-lg-2
   .q-px-xs-xs.q-px-sm-xs.q-px-md-md.q-px-lg-md.justify-right
-    LoginHandlerDropdown(v-if='account' :account='account')
+    LoginHandlerDropdown(v-if='account' :account='account' color='white' class='text-red')
     q-btn.bg-white.text-primary.btn-login(v-else @click='showModal = true' label='Login' icon-right='login')
     WalletModal( v-model='showModal')
 </template>

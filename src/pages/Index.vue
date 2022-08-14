@@ -9,7 +9,7 @@
       <div class="row" style="height: 300px">
         <div class="col-6 self-center center">
           <q-btn
-            to="/choose_role"
+            to="/select_role"
             class="btn bg-primary text-white"
             label="Get married!"
           />

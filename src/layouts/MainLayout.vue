@@ -19,8 +19,9 @@
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      :width="350"
-      :breakpoint="350"
+      :width='350'
+      :breakpoint='350'
+      elevated
     >
       <q-scroll-area style="height: calc(100% - 150px)">
         <div class="row" style="padding: 10px">
@@ -50,7 +51,7 @@
             <q-item-section>Home</q-item-section>
           </q-item>
 
-          <q-item to="/choose_role" exact clickable v-ripple>
+          <q-item to="/select_role" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="favorite" />
             </q-item-section>
