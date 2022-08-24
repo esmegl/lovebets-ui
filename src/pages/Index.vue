@@ -16,7 +16,7 @@
         </div>
         <div class="col-6 self-center center">
           <q-btn
-            to="/how_to_use"
+            to="/guide"
             class="btn bg-white text-primary"
             label="Guide to use lovebets"
           />
