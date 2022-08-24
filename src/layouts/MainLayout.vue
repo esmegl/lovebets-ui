@@ -11,7 +11,6 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-toolbar-title style="padding-left: 10px">Welcome!</q-toolbar-title>
-
         <login-handler>Login</login-handler>
       </q-toolbar>
     </q-header>
@@ -59,15 +58,7 @@
             <q-item-section>Get Married!</q-item-section>
           </q-item>
 
-          <q-item to="/test" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="bug_report" />
-            </q-item-section>
-
-            <q-item-section>Test</q-item-section>
-          </q-item>
-
-          <q-item to="/how_to_use" exact clickable v-ripple>
+          <q-item to="/guide" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="help" />
             </q-item-section>
@@ -75,7 +66,7 @@
             <q-item-section>Guide to use Lovebets</q-item-section>
           </q-item>
 
-          <q-item to="/highscores" exact clickable v-ripple>
+          <q-item to="/high_scores" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="leaderboard" />
             </q-item-section>
