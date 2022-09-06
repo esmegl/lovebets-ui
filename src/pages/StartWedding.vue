@@ -1,412 +1,348 @@
-<template>
-	<q-page class="column items-center">
-		<div class="q-pa-md" v-if="account"> 
-			<q-form
-				class="q-gutter-md"
-				style="max-width: 720" 
-				autocorrect="off"
-				autocapitalize="off"
-				autocomplete="off"
-				spellcheck="false"
-		    > 
+<template lang="pug">
+q-page.center(padding)
+	q-form(
+		style="max-width: 720px"
+		autocorrect="off"
+		autocapitalize="off"
+		autocomplete="off"
+		spellcheck="false"
+		@submit="onSubmit"
+		greedy
+	)
 
-		    	<!-- Minister -->
-		 		<div class="row justify-start" >Minister account name</div>
+		h1.text-h6.q-ma-none Minister
+		div.row.justify-start(style="padding-bottom: 20px")
+			div.col-12
+				q-input(
+					outlined
+					dense
+					hide-bottom-space
+					lazy-rules
+					readonly
+					v-model="formData.proposer"
+					text-color="blue"
+				)
+		h1.text-h6.q-ma-none Wedding name
+		div.row.justify-start
+			div.col-12
+				q-input(
+					clearable 
+					clear-icon="close" 
+					dense
+					name="bet_name"
+					v-model="formData.proposal_name"
+					color="blue"
+					maxlength="13"
+	        :rules="[value => !!value || 'Field is required']"
+					hint="Characters allowed are letters from a to z and numbers from 1 to 5"
+					hide-hint
+				)
+		h1.text-h6.q-ma-none Brides and Grooms
+		div.row.justify-start
+			div.col-12
+				ProposalAuthorization(
+					v-for="(item, index) in formData.requested"
+					:key="index"
+					v-model:actor="item.actor"
+					v-model:permission="item.permission"
+					@remove="formData.requested.splice(index, 1)"
+				)
+		div.row.justify-start(style="padding-bottom: 20px")
+			q-btn(
+				padding="sm md" 
+				color="blue" 
+				label="Add Actor"
+				icon-right="add_circle"
+				@click="formData.requested.push({})"
+			)
 
-				<div class="row justify-center" >
-			   		<div class="col text-h5 text-blue">
-						{{accountName}}
-					</div>  
-				</div>	
+		h1.text-h6.q-ma-none Set loss percentage
+		div.row.justify-start(style="padding-bottom: 20px")
+			q-input(
+				dense
+				v-model="loss"
+				color="blue"
+				mask="#.##"
+				fill-mask="0"
+				reverse-fill-mask
+				suffix="%"
+			)
 
-		    	<!-- Bet name -->
-		    	<div class="row justify-start" >Put a name to the union</div>	
-
-				<div class="row justify-center" >
-			   		<div class="col">
-						<q-input 
-						clearable 
-						clear-icon="close" 
-						filled
-						name="bet_name"
-						v-model="bet_name"
-						label="Bet name" 
-						color="blue"
-						maxlength="12"
-						hint="The characters allowed are letters from a to z and numbers from 1 to 5"
-						hide-hint
-					/>	
-					</div>  
-				</div>   
-
-
-				<!-- Bettors -->
-				<div class="row justify-start" >Add the people that are going to marry</div>
- 
-
-			 	<div class="row justify-between">
-			   		<div class="col-7">
-						<q-input 
-						clearable 
-						clear-icon="close" 
-						filled
-						v-model="bettor_name"
-						label="Account name" 
-						color="blue"
-						/>	
-					</div>  
-					<div class="col-4">
-						<q-input
-						filled
-						v-model="bettor_quantity"
-				        color="blue"
-				        label="Amount to bet"
-				        mask="#.####"
-				        fill-mask="0"
-				        reverse-fill-mask
-				        input-class="text-left"
-				        suffix="TELOS"
-				        hint="Minimum amount allowed is 30 TELOS"
-				        hide-hint
-					     />
-					</div>
+		h1.text-h6.q-ma-none Invite Witnesses
+		div.row.justify-start(style="padding-bottom: 10px")
+			div.col-12
+				q-input(
+					clearable
+					clear-icon="close"
+					v-model="witness"
+					label="Witness account name"
+					color="blue"
+				)
+		div.row.justify-right
+			q-btn(
+				color="blue" 
+				text-color="white" 
+				label="Add Witness" 
+				icon-right="add_circle"
+				@click="addWitness"
+				:disable="witness == ''"
+			)
 
 
-				</div>	
+</template>
 
-				<div class="row justify-end">
-					<div class="col-5 justify-right">
-						<q-btn 
-						@click="addBettor" 
-						color="blue" 
-						text-color="white" 
-						label="Add Bettor" 
-						icon-right="add_circle"
-						:disable="bettor_name == ''"
-						/>
-					</div>	
-				</div>	 
+<script lang="ts">
+import { defineComponent, reactive, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import moment from 'moment';
+import ProposalSuccess from 'components/ProposalSuccess.vue';
+import ProposalAuthorization from 'components/ProposalAuthorization.vue';
+import ProposalAction from 'components/ProposalAction.vue';
+import { Authorization, ProposalForm, Error } from 'src/types';
+import { api } from 'src/api';
+import { useAuthenticator } from 'src/composables/useAuthenticator';
+import { serializeActionData } from 'src/utils/serializeActionData';
+import { randomEosioName } from 'src/utils/handleEosioName';
+import { useQuasar } from 'quasar';
 
-				<!-- Bettors list -->
-				<q-list 
-				v-if="bettors.length > 0"
-				separator
-				>
-					<q-item
-					v-for="(bettor, index) in bettors"
-					:key="bettor.name"
-					>
-						<q-item-section v-if="bettor.name != ''">
-							<div class="row justify-between">
-								<div class="col-5 align-items">
-									{{ bettor.name }}
-								</div>
-								<div class="col-5">
-									{{ bettor.amount}}
-								</div>
+export default defineComponent({
+  name: 'ProposalNew',
+  components: {
+    ProposalSuccess,
+    ProposalAuthorization,
+    ProposalAction
+  },
+  setup() {
+    const router = useRouter();
+    const { account, isAuthenticated, getUser } = useAuthenticator();
+    const $q = useQuasar();
 
-								<q-btn 
-								flat  
-								color="blue" 
-								icon="remove_circle" 
-								@click="removeBettor(index)"
-								>
-									<q-tooltip :delay="500">
-							          Remove bettor
-							        </q-tooltip>
-							    </q-btn>    
-							</div>
-						</q-item-section>
-					</q-item>
-				</q-list> 
+    const amountOfDaysToExpire = ref(7);
+    const blockProducers = ref<Authorization[]>([]);
+    const areBlockProducersApproving = ref(false);
 
-				<!-- Loss -->
-		 		<div class="row">Set loss percentage</div>
+    const success = reactive({
+      proposalName: '',
+      transactionId: '',
+      showModal: false
+    });
 
-				<div class="row">
-					<div class="col-4">
-						<q-input
-						filled
-						v-model="loss"
-				        color="blue"
-				        label="Loss"
-				        mask="#.##"
-				        fill-mask="0"
-				        reverse-fill-mask
-				        suffix="%"
-					    /> 
-					</div>  
-				</div>	
+    const formData: ProposalForm = reactive({
+      proposer: '',
+      proposal_name: '',
+      requested: [
+        {
+          actor: '',
+          permission: ''
+        }
+      ],
+      trx: {
+        expiration: moment()
+          .add(amountOfDaysToExpire.value, 'days')
+          .format('YYYY-MM-DDTHH:mm:ss'),
+        ref_block_num: 0,
+        ref_block_prefix: 0,
+        max_net_usage_words: 0,
+        max_cpu_usage_ms: 0,
+        delay_sec: 0,
+        context_free_actions: '',
+        transaction_extensions: '',
+        actions: []
+      }
+    });
 
-				<!-- Witnesses -->
-		 		<div class="row justify-start">Invite the witnesses</div>
+    var loss = ref(0);
 
-				<div class="row justify-center" >
-			   		<div class="col">
-						<q-input 
-						clearable
-						clear-icon="close" 
-						filled
-						v-model="witness"
-						label="Witness account name" 
-						color="blue"/>
-					</div>  
-				</div>	
+    onMounted(() => {
+      formData.proposal_name = randomEosioName();
+      formData.proposer = account.value;
+    });
 
-				<div class="row justify-end">
-					<div class="col-5 justify-right">
-						<q-btn 
-						color="blue" 
-						text-color="white" 
-						label="Add Witness" 
-						icon-right="add_circle"
-						@click="addWitness"
-						:disable="witness == ''"
-						/>
-					</div>	
-				</div>	
+    onMounted(async () => {
+      if (!isAuthenticated.value) {
+        await router.push('/proposal');
+      }
+    });
 
-				<!-- Witnesses list -->
-				<q-list 
-				v-if="witnesses.length > 0"
-				separator
-				>
-					<q-item
-					v-for="(witness, index) in witnesses"
-					:key="witness"
-					>
-						<q-item-section>
-							<div class="row justify-between">
-								<div class="col-5">
-									{{ witness }}
-								</div>
-								<q-btn 
-								flat  
-								color="blue" 
-								icon="remove_circle" 
-								@click="removeWitness(index)"
-								>
-									<q-tooltip :delay="500">
-							          Remove witness
-							        </q-tooltip>
-								</q-btn>
-							</div>
-						</q-item-section>
-					</q-item>
-				</q-list> 
+    onMounted(async () => {
+      const producers = await api.getProducers();
+      const producersAccount = [] as Authorization[];
 
-				<div class="row justify-between">
-					<div class="col-4">
-						<q-btn 
-						color="blue" 
-						text-color="white" 
-						label="Start Wedding"
-						@click="initBet()"/>
-					</div>
+      for (let index = 0; index < producers.rows.length; index++) {
+        const item = producers.rows[index];
+        if (item.is_active === 1) {
+          producersAccount.push({
+            actor: item.owner,
+            permission: 'active'
+          });
+        }
+      }
 
-					<div class="col-4 justify-right">
-						<q-btn 
-						to="/select_role"
-						flat
-						text-color="blue" 
-						label="Cancel"
-						/>
-					</div>	
-				</div>	
-			</q-form>
-		</div>	
-<!-- 
-		<q-page-sticky>
-			<q-card>
-				<q-card-section>
-					<pre> {{ $data }} </pre>
-				</q-card-section>
-			</q-card>
+      blockProducers.value = producersAccount;
+    });
 
-			<q-card-actions>
-				<q-btn @click="logger($data)" label="Logger">
-					
-				</q-btn>
-			</q-card-actions>
+    function handleError(message: string) {
+      $q.notify({
+        color: 'negative',
+        message,
+        actions: [
+          {
+            label: 'Dismiss',
+            color: 'white'
+          }
+        ]
+      });
+    }
 
-		</q-page-sticky>	
- -->
-	</q-page>	  
-</template> 
+    async function onSubmit() {
+      const data = JSON.parse(JSON.stringify(formData)) as ProposalForm;
+
+      if (areBlockProducersApproving.value) {
+        data.requested = data.requested.concat(
+          JSON.parse(JSON.stringify(blockProducers.value))
+        );
+      }
+
+      if (data.requested.length === 0) {
+        handleError('At least one requested approval');
+        return;
+      }
+
+      if (data.trx.actions.length === 0) {
+        handleError('At least one action');
+        return;
+      }
+
+      data.trx.transaction_extensions = data.trx.transaction_extensions
+        ? (data.trx.transaction_extensions as string).split(',')
+        : [];
+
+      data.trx.context_free_actions = data.trx.context_free_actions
+        ? (data.trx.context_free_actions as string).split(',')
+        : [];
+
+      try {
+        for (let i = 0; i < data.trx.actions.length; i++) {
+          const item = data.trx.actions[i] as {
+            account: string;
+            name: string;
+            data: unknown;
+          };
+
+          const hexData = await serializeActionData({
+            account: item.account,
+            name: item.name,
+            data: item.data
+          });
+
+          data.trx.actions[i].data = hexData;
+        }
+
+        const user = await getUser();
+        const transaction = await user.signTransaction(
+          {
+            actions: [
+              {
+                account: 'eosio.msig',
+                name: 'propose',
+                authorization: [
+                  {
+                    actor: account.value,
+                    permission: 'active'
+                  }
+                ],
+                data
+              }
+            ]
+          },
+          {
+            blocksBehind: 3,
+            expireSeconds: 30
+          }
+        );
+
+        success.showModal = true;
+        success.transactionId = transaction.transactionId;
+        success.proposalName = data.proposal_name;
+      } catch (e) {
+        const error = JSON.parse(JSON.stringify(e)) as Error;
+        handleError(
+          error?.cause?.json?.error?.what || 'Unable to create a proposal'
+        );
+      }
+    }
+
+    function onAddAction() {
+      formData.trx.actions.push({
+        account: '',
+        name: '',
+        authorization: [
+          {
+            actor: '',
+            permission: ''
+          }
+        ],
+        data: {}
+      });
+    }
+
+    function onAmountOfDaysToExpire(days: number) {
+      if (days) {
+        formData.trx.expiration = moment()
+          .add(days, 'days')
+          .format('YYYY-MM-DDTHH:mm:ss');
+      }
+    }
+
+    function onExpiration(value: string) {
+      if (value === null) {
+        amountOfDaysToExpire.value = 7;
+        onAmountOfDaysToExpire(7);
+        return;
+      }
+
+      const now = new Date().getTime();
+      const date = new Date(value).getTime();
+      if (!isNaN(date)) {
+        const diffTime = Math.abs(date - now);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        amountOfDaysToExpire.value = diffDays;
+      }
+    }
+
+    return {
+      onSubmit,
+      onAddAction,
+      amountOfDaysToExpire,
+      onAmountOfDaysToExpire,
+      onExpiration,
+      formData,
+      areBlockProducersApproving,
+      blockProducers,
+      success,
+      loss
+    };
+  }
+});
+</script>
 
 <style>
 
 	.center {
-	display: flex;
 	justify-content: center;
-	align-items: center; 
+	align-items: center;
 	}
 
 	.justify-right {
 	display: flex;
 	justify-content: right;
-	align-items: center; 
+	align-items: center;
 	}
 
-	.justify-left {
+/*	.justify-left {
 	display: flex;
 	justify-content: right;
-	align-items: center; 
-	}
+	align-items: center;
+	}*/
 
-</style>   
-
-<script>
-import { mapGetters, mapActions } from "vuex";
-
-export default {
-  	data () {
-	    return {
-			bet_name: '',
-			loss: 0,
-			bettor_name: '',
-			bettor_names: [],
-			bettor_quantity: 0,
-			bettor_amounts: [],
-			bettors: 
-			[{
-				name: '',
-				amount: 0
-			}],
-			witness: '',
-			witnesses: [],
-			accountHasProfile: false,
-			requested: 
-			[{
-				actor: '',
-				permission: 'active'
-			}],
-	    }
-  	},
-
-  	computed: {
-	    ...mapGetters({ account: 'account/accountName' })
-	},
-
-  	methods: {
-
-	    addBettor: function() {
-	        this.bettors.push({
-	        	name: this.bettor_name,
-	        	amount: this.bettor_quantity
-	        });
-	        this.bettor_names.push(this.bettor_name);
-	        this.bettor_amounts.push(`${this.bettor_quantity} TLOS`);
-	        this.bettor_name = '';
-	        this.bettor_quantity = 0;
-	    },
-
-	    removeBettor: function(index) {
-	    	this.bettors.splice(index, 1)
-	    },
-
-	    addWitness: function() {
-	    	this.witnesses.push(this.witness);
-	    	this.witness = '';
-	    },
-
-	    removeWitness: function(index) {
-	    	this.witnesses.splice(index, 1)
-	    },
-
-	  //   initBet: async function() {
-
-	  //   	// CREATE ACTION TO PROPOSE
-	  //   	const actions = [
-			// 	{
-			// 		account: 'esmeesmeesme',
-			// 		name: 'initbet',
-			// 		authorization: [
-			// 		  {
-			// 		    actor: this.accountName,
-			// 		    permission: 'active',
-			// 		  }
-			// 		],
-			// 		data: {
-			// 			bet_name: this.bet_name,
-			// 			minister: this.accountName,
-			// 			bettors: this.bettor_names,
-			// 			witnesses: this.witnesses,
-			// 			loss: `${this.loss * 0.01} LOSS`,
-			// 			bettor_quantity: this.bettor_amounts
-			// 		}
-			// 	}
-			// ];
-
-			// (async () => {
-			// 	const serialized_actions = await this.$store.$defaultApi.serializeActions(actions)
-			// 	console.log(serialized_actions[0].data)
-
-			// 	// FILL THE LIST OF REQUESTED PARTICIPANTS TO SIGN
-			// 	this.requested[0].actor = this.accountName
-			// 	for (var i = 0; i < this.bettor_names.length; i++) {
-			// 		this.requested.push({
-			// 			actor: this.bettor_names[i],
-			// 			permission: 'active'
-			// 		});
-			// 	} 
-			// 	for (var i = 0; i < this.witnesses.length; i++) {
-			// 	  this.requested.push({
-			// 	  	actor: this.witnesses[i],
-			// 	  	permission: 'active'
-			// 	  });
-			// 	} 
-
-			// 	// BUILD THE MULTISIG PROPOSE TRANSACTION
-			// 	const proposeInput = {
-			// 		proposer: this.accountName,
-			// 		proposal_name: this.bet_name,
-			// 		requested: this.requested,
-			// 		trx: {
-			// 			expiration: '2022-08-22T16:39:15',
-			// 			ref_block_num: 0,
-			// 			ref_block_prefix: 0,
-			// 			max_net_usage_words: 0,
-			// 			max_cpu_usage_ms: 0,
-			// 			delay_sec: 0,
-			// 			context_free_actions: [],
-			// 			actions: [
-			// 				{
-			// 					account: 'esmeesmeesme',
-			// 					name: 'initbet',
-			// 					authorization: [
-			// 					  	{
-			// 					    	actor: this.accountName,
-			// 					    	permission: 'active',
-			// 					  	}
-			// 					],
-
-			// 					data: serialized_actions[0].data,
-			// 				}
-			// 			],
-			// 			transaction_extensions: []
-			// 		}
-			// 	};
-
-			// 	//PROPOSE THE TRANSACTION
-			// 	const result = await this.$store.$defaultApi.transact({
-			// 		actions: [{
-			// 			account: 'eosio.msig',
-			// 			name: 'propose',
-			// 			authorization: [{
-			// 				actor: this.accountName,
-			// 				permission: 'active',
-			// 			}],
-			// 			data: proposeInput,
-			// 		}]
-			// 	}, {
-			// 		blocksBehind: 3,
-			// 		expireSeconds: 30,
-			// 		broadcast: true,
-			// 		sign: true
-			// 	});
-			// })();
-    //   }
-  }
-};
-</script>
+</style>

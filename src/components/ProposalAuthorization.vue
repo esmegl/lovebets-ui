@@ -59,9 +59,10 @@ div.row.q-col-gutter-md.q-mb-md
     q-btn(
       outline
       padding="sm md"
-      color="white"
-      text-color="primary"
+      flat
+      text-color="blue"
       label="Remove"
+      icon-right="remove_circle"
       @click="$emit('remove')"
       :disabled="disabledRemoveButton"
     )
