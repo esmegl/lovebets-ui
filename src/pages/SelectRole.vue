@@ -1,70 +1,55 @@
-<template>
-  <q-page class="q-px-md">
-    <div>
-      <h2 class="center">Select you role in the wedding</h2>
-    </div>
-    <div v-if='account'>
-      <!-- Minister -->
-      <div class="row center">
-        <q-card style="width: 320px">
-          <q-card-section horizontal>
-            <q-img src="~assets/minister.jpg" />
-          </q-card-section>
-          <q-separator />
-          <q-card-actions class="center">
-            <q-btn
+<template lang="pug">
+q-page.q-px-md
+  div
+    h2.center Select you role in the wedding
+  div(v-if='account')
+    div.row.q-pa-md.items-start.q-gutter-md.center
+      //- Minister
+      div.col-12.col-md
+        q-card
+          q-card-section(horizontal)
+            q-img(src="~assets/minister.jpg")
+          q-separator
+          q-card-actions.center
+            q-btn(
               size="lg"
               flat
               text-color="blue"
               label="I am a Minister"
               to="/start_wedding"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
+            )
 
-      <!-- Bettors -->
-      <div class="row center">
-        <q-card style="width: 320px">
-          <q-card-section horizontal>
-            <q-img src="~assets/rings_2.jpg" />
-          </q-card-section>
-          <q-separator />
-          <q-card-actions class="center">
-            <q-btn
+      //- Bettors
+      div.col-12.col-md
+        q-card
+          q-card-section(horizontal)
+            q-img(src="~assets/rings_1.jpg")
+          q-separator
+          q-card-actions.center
+            q-btn(
               size="lg"
               flat
               text-color="blue"
               label="I am going to marry"
               to="/bettor"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
+            )
 
-      <!-- Witnesses -->
-      <div class="row center">
-        <q-card style="width: 320px">
-          <q-card-section horizontal>
-            <q-img src="~assets/wedding_background.jpg" />
-          </q-card-section>
-          <q-separator />
-          <q-card-actions class="center">
-            <q-btn
+      //- Witnesses
+      div.col-12.col-md
+        q-card
+          q-card-section(horizontal)
+            q-img(src="~assets/wedding_background.jpg")
+          q-separator
+          q-card-actions.center
+            q-btn(
               size="lg"
               flat
               text-color="blue"
               label="I am a Witness"
               to="/witness"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
-    </div>
-    <div v-else>
-      <h4 class="center">Please login to start</h4>
-    </div>
-  </q-page>
+            )
+  div(v-else)
+    h4.center Please login to start
 </template>
 
 <script>
@@ -77,11 +62,9 @@ export default {
 };
 </script>
 
-<style>
-.center {
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+<style lang="sass">
+.center 
+  display: flex
+  justify-content: center
+  align-items: center
 </style>
