@@ -17,7 +17,6 @@ q-page(padding)
 					outlined
 					dense
 					hide-bottom-space
-					lazy-rules
 					readonly
 					v-model="formData.proposer"
 					text-color="blue"
@@ -39,19 +38,29 @@ q-page(padding)
 				)
 		h1.text-h6.q-ma-none Brides and Grooms
 		div.row.q-col-gutter-lg
-			div.col-6.col-sm
+			div.col-4.col-md
 				q-input(
 					dense
 					clearable 
 					clear-icon="close" 
 					label="Account name" 
 					color="blue"
-					v-model="input_data.bettor"
+					v-model="inputData.bettor"
+					:rules="[value => !!value || 'Field is required']"
 				)
-			div.col-3
+			div.col-3.col-md
+				q-select(
+					outlined
+					dense
+					label="Permission"
+					v-model="inputData.permission"
+					:options="permissionOptions"
+					:rules="[value => !!value || 'Field is required']"
+				)
+			div.col-3.col-md
 				q-input(
 					dense
-					v-model="input_data.bettor_quantity"
+					v-model="inputData.bettor_quantity"
 					color="blue"
 					label="Amount to bet"
 					mask="#.####"
@@ -59,32 +68,61 @@ q-page(padding)
 					reverse-fill-mask
 					input-class="text-left"
 					suffix="TELOS"
-					hint="Minimum amount allowed is 30 TELOS"
+					hint="Minimum amount allowed is 30 TLOS"
 					hide-hint
 				)
-			div.col-2.items-left
+			div.col-2.col-md
 				q-btn(
 					dense
 					padding="sm md" 
 					color="blue" 
 					label="Add Actor"
-					@click="onAddBettor"
+					@click="onAddActor"
+					:disable="inputData.bettor == '' || inputData.permission == '' || inputData.bettor_quantity == 0"
 				)
-		div.row.justify-start(style="padding-bottom: 20px")
-			q-btn(
-				flat
-				padding="sm md"
-				color="white"
-				text-color="red"
-				label="Remove"
-			)
+
+		q-list(v-if="inputData.bettors.length > 0" separator)
+			q-item(
+			v-for="(bettor, index) in inputData.bettors")
+				q-item-section
+					div.row.q-col-gutter-lg
+						div.col-auto.col-sm
+							q-input(
+								dense
+								readonly
+								outlined
+								v-model="bettor.name"
+							)
+						div.col-3.col-sm
+							q-input(
+								dense
+								readonly
+								outlined
+								v-model="bettor.permission"
+							)
+						div.col-3
+							q-input(
+								dense
+								readonly
+								outlined
+								v-model="bettor.amount"
+							)
+						div.col-2.items-left
+							q-btn(
+								flat
+								padding="sm md"
+								color="white"
+								text-color="red"
+								label="Remove"
+								@click="onRemoveActor(inedx)"
+							)
 			
 
 		h1.text-h6.q-ma-none Set loss percentage
 		div.row.justify-start(style="padding-bottom: 20px")
 			q-input(
 				dense
-				v-model="input_data.loss"
+				v-model="inputData.loss"
 				color="blue"
 				mask="#.####"
 				fill-mask="00001"
@@ -130,6 +168,7 @@ q-page(padding)
 					color="blue"
 					label="Cancel"
 				)
+
 </template>
 
 <script lang="ts">
@@ -155,6 +194,8 @@ export default defineComponent({
 	},
 	setup() {
 
+		const permissionOptions = ['active', 'owner'];
+
 		const router = useRouter();
 		const { account, isAuthenticated, getUser } = useAuthenticator();
 		const $q = useQuasar();
@@ -169,13 +210,25 @@ export default defineComponent({
 			showModal: false
 		});
 
-		const input_data = reactive({
+		const inputData = reactive({
 			bettor: '',
-			bettors: [],
+			permission: '',
+			bettor_quantity: 0,
+			bettors: [
+				{
+					name: '',
+					permission: '',
+					amount: 0
+				}
+			],
 			witness: '',
-			witnesses: [],
+			witnesses: [ 
+				{
+					name: '',
+					permission: ''
+				}
+			],
 			loss: 0,
-			bettor_quantity: 0
 		});
 
 		const formData: ProposalForm = reactive({
@@ -278,6 +331,30 @@ export default defineComponent({
 		async function onSubmit() {
 			// Transform loss and quantity values to correct string format
 
+			// Add bettors to requested and to the smart contract list
+			for(let i = 0; i < inputData.bettors.length; i++) {
+				formData.requested.push({
+					actor: inputData.bettors[i].name,
+					permission: inputData.bettors[i].permission,
+				});
+
+				formData.trx.actions[0].data.bettors.push(inputData.bettors[i].name);
+				// formData.trx.actions[0].data.bettor_quantity.push('${inputData.bettors[i].amount} TLOS');
+			}
+
+			// Add witnesses to requested and to the smart contract list
+			for(let i = 0; i < inputData.witnesses.length; i++) {
+				formData.requested.push({
+					actor: inputData.witnesses[i].name,
+					permission: inputData.witnesses[i].permission,
+				});
+
+				formData.trx.actions[0].data.witnesses.push(inputData.witnesses[i].name);
+			}
+
+
+			// Add witnesses and bettors to requested 
+
 			// Fill the requested list with the bettors
 			// for (let i = 1; i < .bettors.length; i++) {
 			// 	formData.requested[i].actor = .bettors[i];
@@ -324,7 +401,7 @@ export default defineComponent({
 						data: item.data
 					});
 
-					data.trx.actions[i].data = hexData;
+					// data.trx.actions[i].data = hexData;
 				}
 
 				const user = await getUser();
@@ -361,15 +438,21 @@ export default defineComponent({
 			}
 		}
 
-		// function onAddBettor() {
-		// 	input_data.bettors.push();
-		// 	input_data.bettor_quantity.push();
-		// }
+		function onAddActor() {
 
-		// function onRemoveBettor(index) {
-		// 	input_data.bettors.splice(index, 1);
-		// 	input_data.bettor_quantity.splice(index, 1);
-		// }
+			// Add actors to be displayed 
+			inputData.bettors.push({
+	        	name: inputData.bettor,
+	        	permission: inputData.permission,
+	        	amount: inputData.bettor_quantity
+	        });	
+
+			// Reset input values
+		}
+
+		function onRemoveActor(index: number) {
+			inputData.bettors.splice(index, 1);
+		}
 
 		// Change to add bettor and add witness
 		// function onAddAction() {
@@ -412,14 +495,17 @@ export default defineComponent({
 
 		return {
 			onSubmit,
+			onAddActor,
+			onRemoveActor,
 			amountOfDaysToExpire,
 			onAmountOfDaysToExpire,
 			onExpiration,
 			formData,
 			// areBlockProducersApproving,
+			permissionOptions,
 			blockProducers,
 			success,
-			input_data
+			inputData
 		};
 	}
 });

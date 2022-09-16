@@ -11,7 +11,7 @@ q-page.bg-image
           label="Get married!"
           size="lg"
         )
-      div.col-12.col-md.self-center.center
+      div.col-12.col-md.q-pt-sm.self-center.center
         q-btn.btn.bg-white.text-primary(
           to="/guide"
           label="Guide"
