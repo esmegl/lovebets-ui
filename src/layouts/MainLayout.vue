@@ -1,118 +1,72 @@
-<template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar class="bg-primary">
-        <q-btn
+<template lang="pug">
+q-layout(view="lHh Lpr lFf")
+    q-header(elevated)
+      q-toolbar.bg-primary
+        q-btn(
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
-        />
-        <q-toolbar-title style="padding-left: 10px">Welcome!</q-toolbar-title>
-        <login-handler>Login</login-handler>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
+        )
+        q-toolbar-title(style="padding-left: 10px") Welcome!
+        login-handler Login
+    q-drawer.bg-dark(
       v-model="leftDrawerOpen"
       show-if-above
       :width='350'
       :breakpoint='350'
       elevated
-    >
-      <q-scroll-area style="height: calc(100% - 150px)">
-        <div class="row" style="padding: 10px">
-          <div class="column items-start">
-            <q-btn flat dense icon="dark_mode" color="black" />
-          </div>
-          <div class="col">
-            <q-btn flat dense icon="language" color="black" />
-          </div>
-          <div class="column items-end">
-            <q-btn
+    )
+      q-scroll-area(style="height: calc(100% - 150px)")
+        div.row(style="padding: 10px")
+          div.column.items-start
+            q-btn(flat dense icon="dark_mode" color="white")
+          div.col
+            q-btn(flat dense icon="language" color="white")
+          div.column.items-end
+            q-btn(
               flat
               dense
               icon="arrow_back"
               color="primary"
               aria-label="Close Drawer"
               @click="leftDrawerOpen = !leftDrawerOpen"
-            />
-          </div>
-        </div>
-        <q-list padding>
-          <q-item to="/" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="home" />
-            </q-item-section>
+            )
+        q-list.text-white(padding)
+          q-item(to="/" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="home")
+            q-item-section Home
 
-            <q-item-section>Home</q-item-section>
-          </q-item>
+          q-item(to="/select_role" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="favorite")
+            q-item-section Get Married!
 
-          <q-item to="/select_role" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="favorite" />
-            </q-item-section>
+          q-item(to="/guide" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="help")
+            q-item-section Guide to use Lovebets
 
-            <q-item-section>Get Married!</q-item-section>
-          </q-item>
+          q-item(to="/high_scores" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="leaderboard")
+            q-item-section Highscores
 
-          <q-item to="/guide" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="help" />
-            </q-item-section>
+          q-item(to="/contact" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="mail")
+            q-item-section Contact
 
-            <q-item-section>Guide to use Lovebets</q-item-section>
-          </q-item>
+          q-item(to="/support_me" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="volunteer_activism")
+            q-item-section Support Me
 
-          <q-item to="/high_scores" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="leaderboard" />
-            </q-item-section>
-
-            <q-item-section>Highscores</q-item-section>
-          </q-item>
-
-          <q-item to="/contact" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="mail" />
-            </q-item-section>
-
-            <q-item-section>Contact</q-item-section>
-          </q-item>
-
-          <q-item to="/support_me" exact clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon name="volunteer_activism" />
-            </q-item-section>
-
-            <q-item-section>Support Me</q-item-section>
-          </q-item>
-
-          <!-- <q-item-label header class="text-grey-8">
-            Example pages
-          </q-item-label>
-          <ExamplePage
-            v-for="link in examplePages"
-            :key="link.title"
-            v-bind="link"
-          /> -->
-          <!-- <q-item-label header class="text-grey-8">
-            Essential Links
-          </q-item-label>
-          <EssentialLink
-            v-for="link in essentialLinks"
-            :key="link.title"
-            v-bind="link"
-          /> -->
-        </q-list>
-      </q-scroll-area>
-    </q-drawer>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+    q-page-container
+      router-view
 </template>
 
 <script>

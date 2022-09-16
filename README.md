@@ -11,7 +11,7 @@ You will be able to see the marriage's high scores, the more time you are marrie
 
 ### Are you polyamorous? 
 #### Lovebets is also for you!
-Since it also allows you to marry with multilple people.
+Since it allows you to marry with multilple people as well.
 Don't stop being in the last vanguard of thechnology.
 
 ### Marriage not going so well? 

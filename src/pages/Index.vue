@@ -44,7 +44,7 @@ q-page.bg-image
           div.text-subtitle2 Lovebets is also for you!
         q-separator(inset)
         q-card-section
-          div.q-pt-sm It also allows you to marry with multilple people. Don't stop being in the last vanguard of thechnology.
+          div.q-pt-sm It allows you to marry with multilple people as well. Don't stop being in the last vanguard of thechnology.
     div.col-12.col-md.text-white
       q-card.card-bg(style="height: 250px")
         q-card-section
