@@ -9,10 +9,9 @@ q-page(padding)
 		@submit="onSubmit"
 		greedy
 	)
-
 		h1.text-h6.q-ma-none Minister
-		div.row.justify-start(style="padding-bottom: 20px")
-			div.col-12
+		div.row.justify-start.q-col-gutter-lg
+			div.col-8.col-sm
 				q-input(
 					outlined
 					dense
@@ -20,6 +19,15 @@ q-page(padding)
 					readonly
 					v-model="formData.proposer"
 					text-color="blue"
+				)
+			div.col-auto.col-sm
+				q-select(
+					outlined
+					dense
+					label="Permission"
+					v-model="inputData.minister_permission"
+					:options="permissionOptions"
+					:rules="[value => !!value || 'Field is required']"
 				)
 		h1.text-h6.q-ma-none Wedding name
 		div.row.justify-start
@@ -37,89 +45,26 @@ q-page(padding)
 					hide-hint
 				)
 		h1.text-h6.q-ma-none Brides and Grooms
-		div.row.q-col-gutter-lg
-			div.col-4.col-md
-				q-input(
-					dense
-					clearable 
-					clear-icon="close" 
-					label="Account name" 
-					color="blue"
-					v-model="inputData.bettor"
-					:rules="[value => !!value || 'Field is required']"
-				)
-			div.col-3.col-md
-				q-select(
-					outlined
-					dense
-					label="Permission"
-					v-model="inputData.permission"
-					:options="permissionOptions"
-					:rules="[value => !!value || 'Field is required']"
-				)
-			div.col-3.col-md
-				q-input(
-					dense
-					v-model="inputData.bettor_quantity"
-					color="blue"
-					label="Amount to bet"
-					mask="#.####"
-					fill-mask="0"
-					reverse-fill-mask
-					input-class="text-left"
-					suffix="TELOS"
-					hint="Minimum amount allowed is 30 TLOS"
-					hide-hint
-				)
-			div.col-2.col-md
+			div.row
+				div.col-12.col-sm
+					BettorAuthorization(
+						v-for="(item, index) in inputData.bettors"
+						:key="index"
+						v-model:actor="item.name"
+						v-model:permission="item.permission"
+						v-model:amount="item.amount"
+						@remove="inputData.bettors.splice(index, 1)"
+					)
+
+			div.row.q-pb-md
 				q-btn(
-					dense
-					padding="sm md" 
-					color="blue" 
+					color="blue"  
 					label="Add Actor"
-					@click="onAddActor"
-					:disable="inputData.bettor == '' || inputData.permission == '' || inputData.bettor_quantity == 0"
+					@click="inputData.bettors.push({})"
 				)
-
-		q-list(v-if="inputData.bettors.length > 0" separator)
-			q-item(
-			v-for="(bettor, index) in inputData.bettors")
-				q-item-section
-					div.row.q-col-gutter-lg
-						div.col-auto.col-sm
-							q-input(
-								dense
-								readonly
-								outlined
-								v-model="bettor.name"
-							)
-						div.col-3.col-sm
-							q-input(
-								dense
-								readonly
-								outlined
-								v-model="bettor.permission"
-							)
-						div.col-3
-							q-input(
-								dense
-								readonly
-								outlined
-								v-model="bettor.amount"
-							)
-						div.col-2.items-left
-							q-btn(
-								flat
-								padding="sm md"
-								color="white"
-								text-color="red"
-								label="Remove"
-								@click="onRemoveActor(inedx)"
-							)
-			
-
+				
 		h1.text-h6.q-ma-none Set loss percentage
-		div.row.justify-start(style="padding-bottom: 20px")
+		div.row.justify-start
 			q-input(
 				dense
 				v-model="inputData.loss"
@@ -132,37 +77,32 @@ q-page(padding)
 			)
 
 		h1.text-h6.q-ma-none Invite Witnesses
-		//- div.row.justify-start(style="padding-bottom: 10px")
-		//- 	div.col-12
-		//- 		WitnessAuthorization(
-		//- 			v-for="(item, index) in formData.requested"
-		//- 			:key="index"
-		//- 			v-model:actor="item.actor"
-		//- 			v-model:permission="item.permission"
-		//- 			@remove="formData.requested.splice(index, 1)"
-		//- 		)
-		//- div.row.justify-right(style="padding-bottom: 40px")
-		//- 	q-btn(
-		//- 		color="blue" 
-		//- 		text-color="white" 
-		//- 		label="Add Witness" 
-		//- 		icon-right="add_circle"
-		//- 		@click="formData.requested.push({})"
-		//- 		:disable="witness == ''"
-		//- )
+		div.row.justify-start
+			div.col-12
+				WitnessAuthorization(
+					v-for="(item, index) in inputData.witnesses"
+					:key="index"
+					v-model:actor="item.name"
+					v-model:permission="item.permission"
+					@remove="inputData.witnesses.splice(index, 1)"
+				)
+		div.row.q-pb-md
+			q-btn(
+				color="blue" 
+				label="Add Witness" 
+				@click="inputData.witnesses.push({})"
+		)
 
 
 		div.row
-			div.col.justify-right(style="padding-right: 5px")
+			div.col.justify-right.q-pr-sm
 				q-btn(
-					size="lg"
 					color="blue"
 					label="Start Wedding"
 					type="submit"
 				)
 			div.col(style="padding-left: 5px")
 				q-btn(
-					size="lg"
 					flat
 					to="/select_role"
 					color="blue"
@@ -184,6 +124,24 @@ import { useAuthenticator } from 'src/composables/useAuthenticator';
 import { serializeActionData } from 'src/utils/serializeActionData';
 import { randomEosioName } from 'src/utils/handleEosioName';
 import { useQuasar } from 'quasar';
+
+interface InputData {
+	bettor: string;
+	permission: string;
+	minister_permission: string;
+	bettor_quantity: number;
+	bettors: {
+		name: string;
+		permission: string;
+		amount: number;
+	}[];
+	witness: string;
+	witnesses: {
+		name: string;
+		permission: string;
+	}[];
+	loss: number;
+}
 
 export default defineComponent({
 	name: 'NewWedding',
@@ -210,9 +168,10 @@ export default defineComponent({
 			showModal: false
 		});
 
-		const inputData = reactive({
+		const inputData: InputData = reactive({
 			bettor: '',
 			permission: '',
+			minister_permission: '',
 			bettor_quantity: 0,
 			bettors: [
 				{
@@ -285,7 +244,6 @@ export default defineComponent({
 
 			// Add minister request to sign
 			formData.requested[0].actor = account.value;
-			formData.requested[0].permission = 'active';
 
 			// Set formData constants
 			formData.trx.actions[0].account = 'esmeesmeesme';
@@ -297,23 +255,6 @@ export default defineComponent({
 				await router.push('/proposal');
 			}
 		});
-
-		// onMounted(async () => {
-		// 	const producers = await api.getProducers();
-		// 	const producersAccount = [] as Authorization[];
-
-		// 	for (let index = 0; index < producers.rows.length; index++) {
-		// 		const item = producers.rows[index];
-		// 		if (item.is_active === 1) {
-		// 			producersAccount.push({
-		// 				actor: item.owner,
-		// 				permission: 'active'
-		// 			});
-		// 		}
-		// 	}
-
-		// 	blockProducers.value = producersAccount;
-		// });
 
 		function handleError(message: string) {
 			$q.notify({
@@ -501,7 +442,6 @@ export default defineComponent({
 			onAmountOfDaysToExpire,
 			onExpiration,
 			formData,
-			// areBlockProducersApproving,
 			permissionOptions,
 			blockProducers,
 			success,
@@ -512,7 +452,6 @@ export default defineComponent({
 </script>
 
 <style>
-
 	.center {
 	justify-content: center;
 	align-items: center;
@@ -523,11 +462,4 @@ export default defineComponent({
 	justify-content: right;
 	align-items: center;
 	}
-
-/*	.justify-left {
-	display: flex;
-	justify-content: right;
-	align-items: center;
-	}*/
-
 </style>

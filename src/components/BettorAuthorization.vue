@@ -1,5 +1,5 @@
 <template lang="pug">
-div.row.q-col-gutter-md.q-mb-md
+div.row.q-col-gutter-md
   div.col-4.col-sm
     q-select(
       outlined
@@ -41,24 +41,24 @@ div.row.q-col-gutter-md.q-mb-md
             q-item-label(v-if="isLoading") Searching...
             q-item-label(v-else) {{ actor ? 'Nothing found' : 'Search by actor before' }}
 
-  div.col-auto(v-if="requiredAccounts.accounts && requiredAccounts.accounts.length > 0")
-    q-btn(flat padding="sm md" color="white" text-color="primary" title="Required accounts")
-      q-icon(name="people" class="cursor-pointer" size="20px")
-      q-popup-proxy(transition-show="scale" transition-hide="scale")
-        q-card
-          q-card-section
-            div.text-body1.text-weight-bold.text-center {{ requiredAccounts.permissionName }} ({{ requiredAccounts.threshold }})
-            q-separator.q-my-sm
-            table
-              tr(v-for="(item, index) in requiredAccounts.accounts" :key="index").q-pb-xs
-                td.text-body2.text-no-wrap {{ item.weight }}
-                td.text-body2.text-weight-bold.text-no-wrap.q-px-md {{ item.actor }}
-                td.text-body2.text-no-wrap {{ item.permission }}
+  //- div.col-auto(v-if="requiredAccounts.accounts && requiredAccounts.accounts.length > 0")
+  //-   q-btn(flat padding="sm md" color="white" text-color="primary" title="Required accounts")
+  //-     q-icon(name="people" class="cursor-pointer" size="20px")
+  //-     q-popup-proxy(transition-show="scale" transition-hide="scale")
+  //-       q-card
+  //-         q-card-section
+  //-           div.text-body1.text-weight-bold.text-center {{ requiredAccounts.permissionName }} ({{ requiredAccounts.threshold }})
+  //-           q-separator.q-my-sm
+  //-           table
+  //-             tr(v-for="(item, index) in requiredAccounts.accounts" :key="index").q-pb-xs
+  //-               td.text-body2.text-no-wrap {{ item.weight }}
+  //-               td.text-body2.text-weight-bold.text-no-wrap.q-px-md {{ item.actor }}
+  //-               td.text-body2.text-no-wrap {{ item.permission }}
 
   div.col-3
     q-input(
       dense
-      v-model="quantityValue"
+      v-model="amountValue"
       color="blue"
       label="Amount to bet"
       mask="#.####"
@@ -66,7 +66,7 @@ div.row.q-col-gutter-md.q-mb-md
       reverse-fill-mask
       input-class="text-left"
       suffix="TELOS"
-      hint="Minimum amount allowed is 30 TELOS"
+      hint="Minimum 30 TELOS"
       hide-hint
     )
 
@@ -108,7 +108,7 @@ export default defineComponent({
       type: String,
       default: 'active'
     },
-    quantity: {
+    amount: {
       type: Number,
       default: 0
     },
@@ -117,7 +117,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['update:actor', 'update:permission', 'update:quantity', 'remove'],
+  emits: ['update:actor', 'update:permission', 'update:amount', 'remove'],
   setup(props, context) {
     const actorsOptions = ref<string[]>([]);
     const permissionsOptions = ref<string[]>([]);
@@ -144,12 +144,12 @@ export default defineComponent({
       }
     });
 
-    const quantityValue = computed({
+    const amountValue = computed({
       get: () => {
-        return props.quantity;
+        return props.amount;
       },
       set: (value) => {
-        context.emit('update:quantity', value);
+        context.emit('update:amount', value);
       }
     });
 
@@ -241,7 +241,7 @@ export default defineComponent({
     return {
       actorValue,
       permissionValue,
-      quantityValue,
+      amountValue,
       requiredAccounts,
       actorsOptions,
       permissionsOptions,

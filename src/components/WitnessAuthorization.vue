@@ -28,7 +28,6 @@ div.row.q-col-gutter-md.q-mb-md
       outlined
       dense
       hide-bottom-space
-      bg-color="white"
       label="Permission"
       :loading="isLoading"
       v-model="permissionValue"
@@ -41,26 +40,25 @@ div.row.q-col-gutter-md.q-mb-md
             q-item-label(v-if="isLoading") Searching...
             q-item-label(v-else) {{ actor ? 'Nothing found' : 'Search by actor before' }}
 
-  div.col-auto(v-if="requiredAccounts.accounts && requiredAccounts.accounts.length > 0")
-    q-btn(flat padding="sm md" color="white" text-color="primary" title="Required accounts")
-      q-icon(name="people" class="cursor-pointer" size="20px")
-      q-popup-proxy(transition-show="scale" transition-hide="scale")
-        q-card
-          q-card-section
-            div.text-body1.text-weight-bold.text-center {{ requiredAccounts.permissionName }} ({{ requiredAccounts.threshold }})
-            q-separator.q-my-sm
-            table
-              tr(v-for="(item, index) in requiredAccounts.accounts" :key="index").q-pb-xs
-                td.text-body2.text-no-wrap {{ item.weight }}
-                td.text-body2.text-weight-bold.text-no-wrap.q-px-md {{ item.actor }}
-                td.text-body2.text-no-wrap {{ item.permission }}
+  //- div.col-auto(v-if="requiredAccounts.accounts && requiredAccounts.accounts.length > 0")
+  //-   q-btn(flat padding="sm md" color="white" text-color="primary" title="Required accounts")
+  //-     q-icon(name="people" class="cursor-pointer" size="20px")
+  //-     q-popup-proxy(transition-show="scale" transition-hide="scale")
+  //-       q-card
+  //-         q-card-section
+  //-           div.text-body1.text-weight-bold.text-center {{ requiredAccounts.permissionName }} ({{ requiredAccounts.threshold }})
+  //-           q-separator.q-my-sm
+  //-           table
+  //-             tr(v-for="(item, index) in requiredAccounts.accounts" :key="index").q-pb-xs
+  //-               td.text-body2.text-no-wrap {{ item.weight }}
+  //-               td.text-body2.text-weight-bold.text-no-wrap.q-px-md {{ item.actor }}
+  //-               td.text-body2.text-no-wrap {{ item.permission }}
 
   div.col-auto
     q-btn(
       dense
       flat
       padding="sm md"
-      color="white"
       text-color="red"
       icon="remove_circle"
       @click="$emit('remove')"
