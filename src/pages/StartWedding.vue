@@ -143,6 +143,15 @@ interface InputData {
 	loss: number;
 }
 
+interface Data {
+	bet_name: string;
+	minister: string;
+	bettors: string[];
+	witnesses: string[];
+	loss: string;
+	bettor_quantity: string[];
+}
+
 export default defineComponent({
 	name: 'NewWedding',
 	components: {
@@ -220,32 +229,34 @@ export default defineComponent({
 								permission: ''
 							}
 						],
-						data: {
-							bet_name: '',
-							minister: '',
-							bettors: [],
-							witnesses: [],
-							loss: '',
-							bettor_quantity: []
-						}
+						data: {}
 					}
 				]
 			}
 		});
 
+		const weddingData: Data = reactive({
+			bet_name: '',
+			minister: '',
+			bettors: [],
+			witnesses: [],
+			loss: '',
+			bettor_quantity: []
+		});
+
 		onMounted(() => {
 			formData.proposal_name = randomEosioName();
-			formData.trx.actions[0].data.bet_name = formData.proposal_name;
 
+			// The minister is also the proposer
 			formData.proposer = account.value;
-			formData.trx.actions[0].data.minister = account.value;
+			weddingData.minister = account.value;
+
 			formData.trx.actions[0].authorization[0].actor = formData.proposer;
-			formData.trx.actions[0].authorization[0].permission = 'active';
 
 			// Add minister request to sign
 			formData.requested[0].actor = account.value;
 
-			// Set formData constants
+			// Set formData action constants
 			formData.trx.actions[0].account = 'esmeesmeesme';
 			formData.trx.actions[0].name = 'initbet';
 		});
@@ -270,43 +281,42 @@ export default defineComponent({
 		}
 
 		async function onSubmit() {
-			// Transform loss and quantity values to correct string format
 
-			// Add bettors to requested and to the smart contract list
+			weddingData.bet_name = formData.proposal_name;
+
+			// Minister authorization permission
+			formData.trx.actions[0].authorization[0].permission = inputData.minister_permission;
+			// Minister requested permission
+			formData.requested[0].permission = inputData.minister_permission;
+
+			// Bettors
 			for(let i = 0; i < inputData.bettors.length; i++) {
+				// Requested actors to sign
 				formData.requested.push({
 					actor: inputData.bettors[i].name,
 					permission: inputData.bettors[i].permission,
 				});
 
-				formData.trx.actions[0].data.bettors.push(inputData.bettors[i].name);
-				// formData.trx.actions[0].data.bettor_quantity.push('${inputData.bettors[i].amount} TLOS');
+				// Wedding list
+				weddingData.bettors.push(inputData.bettors[i].name);
+				weddingData.bettor_quantity.push(`${inputData.bettors[i].amount} TLOS`);
 			}
 
-			// Add witnesses to requested and to the smart contract list
+			// Witnesses
 			for(let i = 0; i < inputData.witnesses.length; i++) {
+				// Requested actors to sign
 				formData.requested.push({
 					actor: inputData.witnesses[i].name,
 					permission: inputData.witnesses[i].permission,
 				});
-
-				formData.trx.actions[0].data.witnesses.push(inputData.witnesses[i].name);
+				// Wedding list
+				weddingData.witnesses.push(inputData.witnesses[i].name);
 			}
 
+			weddingData.loss = `${inputData.loss} TLOS`;
 
-			// Add witnesses and bettors to requested 
-
-			// Fill the requested list with the bettors
-			// for (let i = 1; i < .bettors.length; i++) {
-			// 	formData.requested[i].actor = .bettors[i];
-			// 	formData.requested[i].permission = 'active';
-			// };
-
-			// Fill the requested list with the witnesses
-			// for (let i = 0; i < raw_data.bettors.length; i++) {
-			// 	formData.requested[i].actor = raw_data.witnesses[i];
-			// 	formData.requested[i].permission = 'active';
-			// };
+			// Add wedding data to actions
+			formData.trx.actions[0].data = weddingData;
 
 			const data = JSON.parse(JSON.stringify(formData)) as ProposalForm;
 
@@ -342,7 +352,7 @@ export default defineComponent({
 						data: item.data
 					});
 
-					// data.trx.actions[i].data = hexData;
+					data.trx.actions[i].data = hexData;
 				}
 
 				const user = await getUser();
@@ -379,37 +389,6 @@ export default defineComponent({
 			}
 		}
 
-		function onAddActor() {
-
-			// Add actors to be displayed 
-			inputData.bettors.push({
-	        	name: inputData.bettor,
-	        	permission: inputData.permission,
-	        	amount: inputData.bettor_quantity
-	        });	
-
-			// Reset input values
-		}
-
-		function onRemoveActor(index: number) {
-			inputData.bettors.splice(index, 1);
-		}
-
-		// Change to add bettor and add witness
-		// function onAddAction() {
-		// 	formData.trx.actions.push({
-		// 		account: 'esmeesmeesme',
-		// 		name: 'initbet',
-		// 		authorization: [
-		// 			{
-		// 				actor: '',
-		// 				permission: ''
-		// 			}
-		// 		],
-		// 		data: {}
-		// 	});
-		// }
-
 		function onAmountOfDaysToExpire(days: number) {
 			if (days) {
 				formData.trx.expiration = moment()
@@ -436,8 +415,6 @@ export default defineComponent({
 
 		return {
 			onSubmit,
-			onAddActor,
-			onRemoveActor,
 			amountOfDaysToExpire,
 			onAmountOfDaysToExpire,
 			onExpiration,
@@ -452,11 +429,6 @@ export default defineComponent({
 </script>
 
 <style>
-	.center {
-	justify-content: center;
-	align-items: center;
-	}
-
 	.justify-right {
 	display: flex;
 	justify-content: right;

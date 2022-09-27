@@ -65,14 +65,7 @@ export interface ProposalForm {
         actor: string;
         permission: string;
       }[];
-      data: {
-        bet_name: string;
-        minister: string;
-        bettors: string[];
-        witnesses: string[];
-        loss: string;
-        bettor_quantity: string[];
-      };
+      data: unknown;
     }[];
   };
 }
