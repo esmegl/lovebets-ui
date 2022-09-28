@@ -47,8 +47,13 @@ q-layout(view="lHh Lpr lFf")
 
           q-item(to="/guide" exact clickable v-ripple)
             q-item-section(avatar)
-              q-icon(name="help")
+              q-icon(name="auto_stories")
             q-item-section Guide to use Lovebets
+
+          q-item(to="/docs" exact clickable v-ripple)
+            q-item-section(avatar)
+              q-icon(name="description")
+            q-item-section Docs
 
           q-item(to="/high_scores" exact clickable v-ripple)
             q-item-section(avatar)
@@ -57,7 +62,7 @@ q-layout(view="lHh Lpr lFf")
 
           q-item(to="/contact" exact clickable v-ripple)
             q-item-section(avatar)
-              q-icon(name="mail")
+              q-icon(name="contact_page")
             q-item-section Contact
 
           q-item(to="/support_me" exact clickable v-ripple)

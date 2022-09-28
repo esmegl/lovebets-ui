@@ -52,7 +52,7 @@ q-table(
   template(v-slot:body="props")
     q-tr(:props="props")
       q-td(key="proposalName" :props="props")
-        router-link(:to="'/proposal/' + props.row.proposalName" style="text-decoration:none").text-primary.cursor-pointer {{props.row.proposalName}}
+        router-link(:to="'/witness_approval/' + props.row.proposalName" style="text-decoration:none").text-primary.cursor-pointer {{props.row.proposalName}}
       q-td(key="approvalStatus" :props="props")
         span {{ props.row.approvalStatus }}
       q-td(key="proposer" :props="props")

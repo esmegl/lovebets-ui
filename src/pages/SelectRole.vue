@@ -31,7 +31,7 @@ q-page.q-px-md
               flat
               text-color="blue"
               label="I am going to marry"
-              to="/bettor"
+              to="/bettor_approval"
             )
 
       //- Witnesses
@@ -46,7 +46,7 @@ q-page.q-px-md
               flat
               text-color="blue"
               label="I am a Witness"
-              to="/witness"
+              to="/witness_approval"
             )
   div(v-else)
     h4.center Please login to start

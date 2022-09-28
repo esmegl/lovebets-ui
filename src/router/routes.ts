@@ -8,7 +8,18 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Index.vue') }]
   },
   {
-    path: '/',
+    path: '/account/:account',
+    name: 'account',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Account.vue')
+      }
+    ]
+  },
+  {
+    path: '/select_role',
     name: 'select_role',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -16,7 +27,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/',
+    path: '/start_wedding',
     name: 'start_wedding',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -24,7 +35,23 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/',
+    path: '/bettor_approval',
+    name: 'bettor_approval',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '/bettor_approval', component: () => import('pages/BettorApproval.vue') }
+    ]
+  },
+  {
+    path: '/witness_approval',
+    name: 'witness_approval',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '/witness_approval', component: () => import('pages/WitnessApproval.vue') }
+    ]
+  },
+  {
+    path: '/guide',
     name: 'guide',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -32,7 +59,15 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/',
+    path: '/docs',
+    name: 'docs',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '/docs', component: () => import('pages/Docs.vue') }
+    ]
+  },
+  {
+    path: '/high_scores',
     name: 'high_scores',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -40,7 +75,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/',
+    path: '/support_me',
     name: 'support_me',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -48,12 +83,24 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/',
+    path: '/contact',
     name: 'contact',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '/contact', component: () => import('pages/Contact.vue') }
     ]
+  },
+  {
+    path: '/transaction/:transaction',
+    name: 'transaction',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Transaction.vue') }]
+  },
+  {
+    path: '/witness_approval/:proposalName',
+    name: 'ProposalItem',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ProposalItem.vue') }]
   },
   {
     path: '/:catchAll(.*)*',
