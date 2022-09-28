@@ -109,8 +109,8 @@ export default defineComponent({
       default: 'active'
     },
     amount: {
-      type: Number,
-      default: 0
+      type: String,
+      default: ''
     },
     disabledRemoveButton: {
       type: Boolean,

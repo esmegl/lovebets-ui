@@ -140,17 +140,17 @@ interface InputData {
 		name: string;
 		permission: string;
 	}[];
-	loss: number;
+	loss: string;
 }
 
-interface Data {
-	bet_name: string;
-	minister: string;
-	bettors: string[];
-	witnesses: string[];
-	loss: string;
-	bettor_quantity: string[];
-}
+// interface Data {
+// 	bet_name: string;
+// 	minister: string;
+// 	bettors: string[];
+// 	witnesses: string[];
+// 	loss: string;
+// 	bettor_quantity: string[];
+// }
 
 export default defineComponent({
 	name: 'NewWedding',
@@ -196,7 +196,7 @@ export default defineComponent({
 					permission: ''
 				}
 			],
-			loss: 0,
+			loss: '',
 		});
 
 		const formData: ProposalForm = reactive({
@@ -235,7 +235,7 @@ export default defineComponent({
 			}
 		});
 
-		const weddingData: Data = reactive({
+		const weddingData = reactive({
 			bet_name: '',
 			minister: '',
 			bettors: [],
@@ -313,7 +313,8 @@ export default defineComponent({
 				weddingData.witnesses.push(inputData.witnesses[i].name);
 			}
 
-			weddingData.loss = `${inputData.loss} TLOS`;
+			var loss: number = +inputData.loss;
+			weddingData.loss = `${loss / 1000} LOSS`;
 
 			// Add wedding data to actions
 			formData.trx.actions[0].data = weddingData;
