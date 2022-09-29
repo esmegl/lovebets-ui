@@ -1,7 +1,7 @@
 <template lang="pug">
 q-page.q-px-md
   div
-    h2.center Select you role in the wedding
+    h2.center Select you role
   div(v-if='account')
     div.row.q-pa-md.items-start.q-gutter-md.center
       //- Minister

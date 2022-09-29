@@ -1,11 +1,19 @@
 <template lang="pug">
 q-page(padding)
-  div.q-py-lg(v-if="isAuthenticated" name="myProposal")
-    ProposalTable(
-      title="Needs your signature"
-      type="needsYourSignature"
-      :account="account"
-    )
+	div.q-py-lg
+		q-btn(
+			color="blue"
+			text-color="white"
+			to="/select_role"
+			label="Back"
+			icon="arrow_back"
+		)
+	div.q-py-lg(v-if="isAuthenticated" name="myProposal")
+		ProposalTable(
+			title="Needs your signature"
+			type="needsYourSignature"
+			:account="account"
+		)
 </template>
 
 <script lang="ts">
