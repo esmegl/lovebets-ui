@@ -27,13 +27,21 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/start_wedding',
-    name: 'start_wedding',
+    path: '/minister',
+    name: 'minister',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '/start_wedding', component: () => import('pages/StartWedding.vue') }
+      { path: '/minister', component: () => import('pages/Minister.vue') }
     ]
   },
+  // {
+  //   path: '/start_wedding',
+  //   name: 'start_wedding',
+  //   component: () => import('layouts/MainLayout.vue'),
+  //   children: [
+  //     { path: '/start_wedding', component: () => import('pages/StartWedding.vue') }
+  //   ]
+  // },
   {
     path: '/bettor_approval',
     name: 'bettor_approval',

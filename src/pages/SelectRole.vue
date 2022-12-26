@@ -16,7 +16,7 @@ q-page.q-px-md
               flat
               text-color="blue"
               label="I am a Minister"
-              to="/start_wedding"
+              to="/minister"
             )
 
       //- Bettors

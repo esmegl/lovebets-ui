@@ -1,6 +1,6 @@
 <template lang="pug">
 q-table(
-  color="primary"
+  color="blue"
   flat
   :bordered="false"
   :square="true"
@@ -52,11 +52,11 @@ q-table(
   template(v-slot:body="props")
     q-tr(:props="props")
       q-td(key="proposalName" :props="props")
-        router-link(:to="'/witness_approval/' + props.row.proposalName" style="text-decoration:none").text-primary.cursor-pointer {{props.row.proposalName}}
+        router-link(:to="'/witness_approval/' + props.row.proposalName" style="text-decoration:none").text-blue.cursor-pointer {{props.row.proposalName}}
       q-td(key="approvalStatus" :props="props")
         span {{ props.row.approvalStatus }}
       q-td(key="proposer" :props="props")
-        router-link(:to="'/account/' + props.row.proposer" style="text-decoration:none").text-primary.cursor-pointer {{props.row.proposer}}
+        router-link(:to="'/account/' + props.row.proposer" style="text-decoration:none").text-blue.cursor-pointer {{props.row.proposer}}
       q-td(key="executed" :props="props")
         q-badge(:color="props.row.executed ? 'green' : 'orange'" :label="props.row.executed ? 'EXECUTED' : 'NOT EXECUTED'")
 </template>

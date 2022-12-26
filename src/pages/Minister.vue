@@ -33,8 +33,8 @@ q-page(padding)
 		div.row.justify-start
 			div.col-12
 				q-input(
-					clearable 
-					clear-icon="close" 
+					clearable
+					clear-icon="close"
 					dense
 					name="bet_name"
 					v-model="formData.proposal_name"
@@ -58,11 +58,11 @@ q-page(padding)
 
 			div.row.q-pb-md
 				q-btn(
-					color="blue"  
+					color="blue"
 					label="Add Actor"
 					@click="inputData.bettors.push({})"
 				)
-				
+
 		h1.text-h6.q-ma-none Set loss percentage
 		div.row.justify-start
 			q-input(
@@ -88,8 +88,8 @@ q-page(padding)
 				)
 		div.row.q-pb-md
 			q-btn(
-				color="blue" 
-				label="Add Witness" 
+				color="blue"
+				label="Add Witness"
 				@click="inputData.witnesses.push({})"
 		)
 
@@ -143,15 +143,6 @@ interface InputData {
 	loss: string;
 }
 
-// interface Data {
-// 	bet_name: string;
-// 	minister: string;
-// 	bettors: string[];
-// 	witnesses: string[];
-// 	loss: string;
-// 	bettor_quantity: string[];
-// }
-
 export default defineComponent({
 	name: 'NewWedding',
 	components: {
@@ -190,7 +181,7 @@ export default defineComponent({
 				}
 			],
 			witness: '',
-			witnesses: [ 
+			witnesses: [
 				{
 					name: '',
 					permission: ''
@@ -314,7 +305,7 @@ export default defineComponent({
 			}
 
 			var loss: number = +inputData.loss;
-			weddingData.loss = `${loss / 1000} LOSS`;
+			weddingData.loss = `${loss / 100} LOSS`;
 
 			// Add wedding data to actions
 			formData.trx.actions[0].data = weddingData;
@@ -357,6 +348,7 @@ export default defineComponent({
 				}
 
 				const user = await getUser();
+
 				const transaction = await user.signTransaction(
 					{
 						actions: [
@@ -366,7 +358,7 @@ export default defineComponent({
 								authorization: [
 									{
 										actor: account.value,
-										permission: 'active'
+										permission: inputData.minister_permission
 									}
 								],
 								data
@@ -382,6 +374,10 @@ export default defineComponent({
 				success.showModal = true;
 				success.transactionId = transaction.transactionId;
 				success.proposalName = data.proposal_name;
+
+
+				// TODO: minister approval sign
+
 			} catch (e) {
 				const error = JSON.parse(JSON.stringify(e)) as Error;
 				handleError(

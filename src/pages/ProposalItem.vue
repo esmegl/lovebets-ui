@@ -13,7 +13,7 @@ div(:style="isLoading ? '' : 'max-height: 12rem;'").full-width.row.justify-cente
       q-badge(v-if="isCanceled" color="red" label="CANCELED")
 
     div.row.q-gutter-sm.justify-center.items-center
-      q-btn(v-if="isShowExecuteButton" outline padding="sm md" color="white" text-color="white" label="Execute" @click="onExecute")
+      //- q-btn(v-if="isShowExecuteButton" outline padding="sm md" color="white" text-color="white" label="Execute" @click="onExecute")
       q-btn(v-if="isShowCancelButton" outline padding="sm md" color="white" text-color="white" label="Cancel" @click="onCancel")
       q-btn(v-if="isShowApproveButton" outline padding="sm md" color="white" text-color="white" label="Approve" @click="onApprove")
       q-btn(v-if="isShowUnapproveButton" outline padding="sm md" color="white" text-color="white" label="Unapprove" @click="onUnapprove")
